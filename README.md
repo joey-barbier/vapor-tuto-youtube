@@ -37,7 +37,7 @@ Ces guides sont basés sur la [playlist YouTube de formation Vapor](https://www.
 
 🎮 [Twitch](https://twitch.tv/horka_tv) - Mardi / Jeudi / Samedi à 21h
 
-🤖 [Prof particulier IA](https://notebooklm.google.com/notebook/c5cfe558-55bb-4c24-98dc-44fda0217944) - Pose tes questions sur Vapor
+🤖 [Prof particulier IA](https://prof-vapor.orka.pw) - Pose tes questions sur Vapor
 
 ## Utilisation
 

@@ -41,6 +41,7 @@ Projet développé en live sur **Twitch** :
 
 ## Ressources
 
+- [Code source GitHub](https://github.com/joey-barbier/vapor-tuto-youtube)
 - [Documentation Vapor](https://docs.vapor.codes)
 - [Discord Vapor](https://discord.gg/vapor)
 - [GitHub Vapor](https://github.com/vapor/vapor)
