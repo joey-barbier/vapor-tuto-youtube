@@ -1,0 +1,134 @@
+# Variables globales utilisées dans le pipeline
+variables:
+  ARTIFACT_DIR: "./archive"        # Dossier où l'archive Docker sera stockée temporairement
+  ARTIFACT_NAME: "vapor_app.tar"   # Nom de l'archive de l'image Docker
+  STORAGE_DRIVER: "vfs"            # Driver de stockage utilisé par Buildah pour la construction
+  BUILDAH_FORMAT: "docker"         # Format de l'image Docker générée par Buildah
+
+# Définition des différentes étapes du pipeline
+stages:
+  - build                          # Étape pour construire l'image Docker
+  - push                           # Étape pour pousser l'image vers le registre
+  - deploy                         # Étape pour déployer l'application sur le serveur
+
+# Configuration par défaut pour les étapes
+default:
+  before_script:
+    # Définir les variables TAG et DOCKER_IMAGE avant chaque étape
+    - export TAG="${CI_COMMIT_TAG:-${CI_COMMIT_SHA:0:8}}" && export DOCKER_IMAGE="${CI_REGISTRY_IMAGE}:${TAG}" && echo ${TAG} && echo ${DOCKER_IMAGE}
+    # TAG : Utilise le tag Git s'il est présent, sinon les 8 premiers caractères du hash du commit
+    # DOCKER_IMAGE : Nom complet de l'image Docker incluant le registre et le tag
+
+
+# ----------------------------------------------------------------------------------------
+
+build:
+  stage: build
+  image:
+    name: "quay.io/buildah/stable:v1.21.0"  # Image Buildah utilisée pour construire l'image Docker
+  script:
+    - echo "🔨 Construction de l'image Docker avec Buildah..."                          # Message indiquant le début de la construction
+    - buildah bud --format "${BUILDAH_FORMAT}" -t "${DOCKER_IMAGE}" .                   # Commande Buildah pour construire l'image
+    - echo "📦 Création de l'archive Docker..."                                         # Message indiquant la création de l'archive
+    - mkdir -p "${ARTIFACT_DIR}"                                                        # Créer le dossier pour stocker l'archive Docker
+    - buildah push "${DOCKER_IMAGE}" docker-archive:"${ARTIFACT_DIR}/${ARTIFACT_NAME}"  # Pousser l'image construite dans une archive Docker pour l'étape suivante
+  artifacts:
+    name: "archive:${ARTIFACT_NAME}:${CI_JOB_ID}"                                       # Nom de l'archive avec l'ID du job
+    when: on_success                                                                    # Conserver l'archive uniquement si la construction réussit
+    expire_in: 6h                                                                       # Expiration de l'archive après 6 heures
+    paths:
+      - "$ARTIFACT_DIR/"                                                                # Chemin de l'archive Docker
+  only:
+    - main                                                                              # Exécuter cette étape seulement sur la branche 'main'
+    - tags                                                                              # Exécuter aussi sur les commits tagués
+
+
+# ----------------------------------------------------------------------------------------
+
+push:
+  stage: push
+  image:
+    name: "quay.io/buildah/stable:v1.21.0"                     # Image Buildah pour l'étape de push
+  only:
+    - main                                                     # Exécuter cette étape seulement sur 'main'
+    - tags                                                     # Et sur les commits tagués
+  script:
+    - echo "📤 Pousser l'image Docker vers le registre..."     # Message indiquant le début de la poussée
+    - buildah pull docker-archive:$ARTIFACT_DIR/$ARTIFACT_NAME
+                                                               # Charger l'image Docker à partir de l'archive créée précédemment
+    - echo $CI_REGISTRY_PASSWORD | buildah login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+                                                               # Se connecter au registre Docker en utilisant les variables d'environnement GitLab
+    - buildah push $DOCKER_IMAGE                               # Pousser l'image Docker vers le registre GitLab
+  dependencies:
+    - build                                                    # Indiquer que cette étape dépend de l'étape 'build'
+
+
+# ----------------------------------------------------------------------------------------
+
+deploy:
+  stage: deploy
+  tags:
+    - prod                                                     # Exécuter cette étape uniquement sur les runners tagués 'prod'
+  script:
+    - echo "🚀 Déploiement de l'application Vapor..."          # Message indiquant le début du déploiement
+    - cd /var/www/vapordemo.orka.pw                            # Aller dans le répertoire du projet sur le serveur
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY # Authentifie Docker pour accéder au registre GitLab
+    - echo "🔄 Tirer la dernière version de l'image Docker..." # Message pour indiquer le pull de l'image
+    - docker-compose pull                                      # Tirer la dernière image Docker depuis le registre
+    - echo "🛑 Arrêter et supprimer les conteneurs existants..." # Message pour arrêter les conteneurs en cours
+    - docker-compose down                                      # Arrêter et supprimer les conteneurs existants
+    - echo "🔧 Démarrer les conteneurs avec la nouvelle image..." # Message pour démarrer la nouvelle version
+    - docker-compose up -d                                     # Démarrer les conteneurs en arrière-plan
+    - echo "✅ Déploiement terminé avec succès !"              # Message indiquant que le déploiement est terminé
+  only:
+    - main
+    - tags                                                     # Exécuter cette étape seulement sur les commits tagués
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

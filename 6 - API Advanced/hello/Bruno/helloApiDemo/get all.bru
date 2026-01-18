@@ -1,0 +1,20 @@
+meta {
+  name: get all
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base}}/todos?page=1&per=100&isCompleted=false&withUser=true&direction=desc&username=Alice Johnson
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 1
+  per: 100
+  isCompleted: false
+  withUser: true
+  direction: desc
+  username: Alice Johnson
+}

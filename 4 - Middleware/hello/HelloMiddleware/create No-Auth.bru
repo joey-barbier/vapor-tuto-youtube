@@ -1,0 +1,17 @@
+meta {
+  name: create No-Auth
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base}}/todos
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Rejoins moi sur twitch.tv/horka_tv !"
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: admin
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base}}/admin
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,15 @@
+meta {
+  name: login
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base}}/login
+  body: none
+  auth: none
+}
+
+vars:post-response {
+  access_token: res.body.jwt
+}
