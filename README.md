@@ -39,6 +39,8 @@ Open source knowledge base to learn **Vapor**, the server-side Swift framework.
 
 🤖 [AI Tutor](https://prof-vapor.orka.pw) - Ask your Vapor questions (EN & FR supported)
 
+📦 [LibTracker](https://app.libtracker.io) - Track your Swift dependencies & vulnerabilities
+
 ## Usage
 
 These resources can be used as:
@@ -96,6 +98,8 @@ Base de connaissances open source pour apprendre **Vapor**, le framework Swift c
 🎮 [Twitch](https://twitch.tv/horka_tv) - Lives Mardi / Jeudi / Samedi à 21h
 
 🤖 [Prof particulier IA](https://prof-vapor.orka.pw) - Pose tes questions sur Vapor (FR & EN supportés)
+
+📦 [LibTracker](https://app.libtracker.io) - Surveille tes dépendances Swift & leurs vulnérabilités
 
 ## Utilisation
 
